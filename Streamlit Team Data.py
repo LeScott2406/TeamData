@@ -1,8 +1,11 @@
 import streamlit as st
 import pandas as pd
 
-# Load the data from the local file
-df = pd.read_excel('/Users/leescott/Documents/Betting/Final.xlsx')
+# Use the GitHub URL where the Excel file is stored
+url = "https://github.com/LeScott2406/TeamData/raw/refs/heads/main/Final.xlsx"
+
+# Load the Excel file from GitHub
+df = pd.read_excel(url)
 
 # Streamlit app
 st.title('Football Data Viewer')
