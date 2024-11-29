@@ -6,11 +6,16 @@ from io import BytesIO
 # URL to raw file
 url = "https://github.com/LeScott2406/TeamData/raw/refs/heads/main/Final.xlsx"
 
-# Fetch the file from GitHub using requests
-response = requests.get(url)
-if response.status_code == 200:
+# Attempt to fetch the file from GitHub using requests
+st.write("Fetching file from GitHub...")
+try:
+    response = requests.get(url)
+    response.raise_for_status()  # Will raise an HTTPError for bad responses (4xx, 5xx)
+    st.write("File fetched successfully!")
+
     # Load the content of the file into pandas
     df = pd.read_excel(BytesIO(response.content))
+    st.write("File loaded into DataFrame")
 
     # Streamlit app
     st.title('Football Data Viewer')
@@ -27,8 +32,8 @@ if response.status_code == 200:
 
     # Display the filtered DataFrame
     st.write(filtered_df)
-else:
-    st.error(f"Failed to load the file. Status code: {response.status_code}")
 
-
-
+except requests.exceptions.RequestException as e:
+    st.error(f"Failed to fetch the file: {e}")
+except Exception as e:
+    st.error(f"An unexpected error occurred: {e}")
