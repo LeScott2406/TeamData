@@ -1,30 +1,34 @@
-#!/usr/bin/env python
-# coding: utf-8
-
-# In[ ]:
-
-
 import streamlit as st
 import pandas as pd
+import requests
+from io import BytesIO
 
-# Load the data from the raw GitHub URL
+# URL to raw file
 url = "https://github.com/LeScott2406/TeamData/raw/refs/heads/main/Final.xlsx"
-df = pd.read_excel(url)
 
-# Streamlit app
-st.title('Football Data Viewer')
+# Fetch the file from GitHub using requests
+response = requests.get(url)
+if response.status_code == 200:
+    # Load the content of the file into pandas
+    df = pd.read_excel(BytesIO(response.content))
 
-# Create the League dropdown filter with "All" as an option
-league_options = ['All'] + df['League'].unique().tolist()
-selected_league = st.selectbox('Select a League', league_options)
+    # Streamlit app
+    st.title('Football Data Viewer')
 
-# Filter data based on the selected league
-if selected_league != 'All':
-    filtered_df = df[df['League'] == selected_league]
+    # Create the League dropdown filter with "All" as an option
+    league_options = ['All'] + df['League'].unique().tolist()
+    selected_league = st.selectbox('Select a League', league_options)
+
+    # Filter data based on the selected league
+    if selected_league != 'All':
+        filtered_df = df[df['League'] == selected_league]
+    else:
+        filtered_df = df
+
+    # Display the filtered DataFrame
+    st.write(filtered_df)
 else:
-    filtered_df = df
+    st.error(f"Failed to load the file. Status code: {response.status_code}")
 
-# Display the filtered DataFrame
-st.write(filtered_df)
 
 
